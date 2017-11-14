@@ -18,9 +18,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from member.apis import Login, Signup, FacebookLogin
 from . import views
-from post.apis import PostList
 
 urlpatterns = [
     # Django admin
@@ -29,11 +27,10 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^post/', include('post.urls', namespace='post')),
     url(r'^member/', include('member.urls', namespace='member')),
+    url(r'^api/', include('urls.apis', namespace='api')),
 
-    url(r'^api/post/$', PostList.as_view(), name='api-post'),
-    url(r'^api/member/login/$', Login.as_view(), name='api-login'),
-    url(r'^api/member/signup/$', Signup.as_view(), name='api-signup'),
-    url(r'^api/member/facebook-login/$', FacebookLogin.as_view(), name='api-facebook-login'),
+
+
 ]
 urlpatterns += static(
     settings.MEDIA_URL,

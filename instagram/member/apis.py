@@ -86,3 +86,10 @@ class FacebookLogin(APIView):
 
         if not debug_token_info.is_valid:
             raise APIException('페이스북 토큰이 유효하지 않음')
+
+        user = authenticate(facebook_user_id=request.data['facebook_user_id'])
+        if not user:
+            User.objects.create_user(
+                username=f'fb_{request.data["facebook_user_id"]}'
+            )
+        return Response(UserSerializer(user).data)

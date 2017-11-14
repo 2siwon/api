@@ -7,7 +7,7 @@ from django.contrib.auth import (
     get_user_model,
     login as django_login,
     logout as django_logout,
-)
+    authenticate)
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -172,6 +172,8 @@ def facebook_login(request):
             age=0
         )
     # user를 로그인시키고 post_list페이지로 이동
+    # django_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+    user = authenticate(facebook_user_id=user_info.id)
     django_login(request, user)
     return redirect('post:post_list')
 
