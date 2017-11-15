@@ -1,14 +1,17 @@
-"""
-post_list뷰를 'post/' URL에 할당
-"""
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
-# from member.decorators import login_required
-from .forms import PostForm, CommentForm
-from .models import Post, PostComment
+from ..forms import PostForm, CommentForm
+from ..models import Post
+
+__all__ = (
+    'post_list',
+    'post_detail',
+    'post_create',
+    'post_delete',
+    'post_like_toggle',
+)
 
 
 def post_list(request):
@@ -60,10 +63,8 @@ def post_create(request):
     """
     1. 이 뷰에 접근할 때, 해당 사용자가 인증된 상태가 아니면 로그인 뷰로 redirect
         is_authenticated
-
     2. form.is_valid()를 통과한 후, 생성하는 Post객체에 author정보를 추가
         request.user
-
     :param request:
     :return:
     """
@@ -117,17 +118,13 @@ def post_like_toggle(request, post_pk):
     """
     1. view, url연결
         /post/<post_pk>/like-toggle/
-
     2. 로직구현
         post_pk에 해당하는 Post가
         현재 로그인한 유저의 like_posts에 있다면 없애고
         like_posts에 없다면 추가
-
     3. post.html에서 현재 user가 해당 post를 like했는지 여부 표시
         {% if <A> in <B> %}
-
     4. post.html에서 이 뷰로 요청을 보낼 수 있는 form구현
-
     :param request:
     :param post_pk:
     :return:
@@ -155,56 +152,3 @@ def post_like_toggle(request, post_pk):
         if next_path:
             return redirect(next_path)
         return redirect('post:post_detail', post_pk=post_pk)
-
-
-def comment_create(request, post_pk):
-    """
-    로그인한 유저만 요청 가능하도록 함
-    작성하는 Comment에 author정보 추가
-    
-    :param request:
-    :param post_pk:
-    :return:
-    """
-    if not request.user.is_authenticated:
-        return redirect('member:login')
-
-    # URL get parameter로 온 'post_pk'에 해당하는
-    # Post instance를 'post'변수에 할당
-    # 찾지못하면 404Error를 브라우저에 리턴
-    post = get_object_or_404(Post, pk=post_pk)
-    if request.method == 'POST':
-        # 데이터가 바인딩된 CommentForm인스턴스를 form에 할당
-        form = CommentForm(request.POST)
-        # 유효성 검증
-        if form.is_valid():
-            # 통과한 경우, post에 해당하는 Comment인스턴스를 생성
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-
-            # GET parameter로 'next'값이 전달되면 
-            # 공백을 없애고 다음에 redirect될 주소로 지정
-            next = request.GET.get('next', '').strip()
-            # 다음에 갈 URL (next)가 빈 문자열이 아닌 경우
-            if next:
-                # 해당 next url로 이동
-                return redirect(next)
-            # 지정되지 않으면 post_detail로 이동
-            return redirect('post:post_detail', post_pk=post_pk)
-
-
-def comment_delete(request, comment_pk):
-    next_path = request.GET.get('next', '').strip()
-
-    if request.method == 'POST':
-        comment = get_object_or_404(PostComment, pk=comment_pk)
-        if comment.author == request.user:
-            comment.delete()
-            if next_path:
-                return redirect(next_path)
-            return redirect('post:post_detail', post_pk=comment.post.pk)
-        else:
-            raise PermissionDenied('작성자가 아닙니다')
-

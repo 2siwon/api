@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from . import views
+from .. import views
 
 urlpatterns = [
     # Post
@@ -12,5 +12,5 @@ urlpatterns = [
 
     # Comment
     url(r'^(?P<post_pk>\d+)/comment/create/$', views.comment_create, name='comment_create'),
-    url(r'^comment/(?P<comment_pk>\d+)/delete/$', views.comment_delete, name='comment_delete')
+    url(r'^comment/(?P<comment_pk>\d+)/delete/$', views.comment_delete, name='comment_delete'),
 ]

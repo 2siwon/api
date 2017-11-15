@@ -90,6 +90,12 @@ class FacebookLogin(APIView):
         user = authenticate(facebook_user_id=request.data['facebook_user_id'])
         if not user:
             User.objects.create_user(
-                username=f'fb_{request.data["facebook_user_id"]}'
+                username=f'fb_{request.data["facebook_user_id"]}',
+                user_type=User.USER_TYPE_FACEBOOK,
             )
-        return Response(UserSerializer(user).data)
+
+            data = {
+                'user': UserSerializer(user).data,
+                'token': user.token,
+            }
+            return Response(data)

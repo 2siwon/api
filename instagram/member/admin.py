@@ -30,6 +30,7 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
     add_form = SignupForm
-    inlines = [RelationInline,]
+    inlines = [RelationInline, ]
+
 
 admin.site.register(User, UserAdmin)
