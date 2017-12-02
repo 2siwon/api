@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 
-from member.decorators import login_required
+from ..decorators import login_required
 
 User = get_user_model()
 

@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.test import TransactionTestCase
 
-from member.models import User
+from instagram.member.apis import User
 
 
 class UserModelTest(TransactionTestCase):
